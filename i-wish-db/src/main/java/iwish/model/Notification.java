@@ -17,6 +17,7 @@ public class Notification {
         this.type = type;
         this.read = read;
         this.createdAt = createdAt;
+
     }
 
     public int getNotifId() { return notifId; }
