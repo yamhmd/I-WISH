@@ -12,7 +12,7 @@ This is the single source of truth for every message exchanged between Client an
 - Money amounts are numbers (floats), two decimal places of precision expected.
 - IDs (`user_id`, `wish_id`, `item_id`, etc.) are integers matching the database primary keys.
 - Passwords are never sent back in any response, ever.
-- Once a client logs in, the server should associate `user_id` with that socket/session so later requests don't need to keep re-sending it insecurely — but for simplicity in this project, we still include `user_id` explicitly in every request so the server can validate it against the session.
+- Once a client logs in, the iwish.server should associate `user_id` with that socket/session so later requests don't need to keep re-sending it insecurely — but for simplicity in this project, we still include `user_id` explicitly in every request so the iwish.server can validate it against the session.
 
 ## Standard Error Response
 
@@ -38,7 +38,7 @@ Common `message` values to use consistently: `"Invalid credentials"`, `"Username
 
 **Response (error)** — e.g. username/email already exists.
 
-*Note: server hashes the password before storing it. Client always sends plaintext over this call — hashing is a server responsibility.*
+*Note: iwish.server hashes the password before storing it. Client always sends plaintext over this call — hashing is a iwish.server responsibility.*
 
 ---
 
@@ -265,7 +265,7 @@ Common `message` values to use consistently: `"Invalid credentials"`, `"Username
 
 **Response (error)** — `"Amount exceeds remaining price"`, `"Cannot contribute to your own wish item"`, `"Item already complete"`.
 
-*Note: the server must apply this as one atomic, guarded update (e.g. `UPDATE WishItems SET amount_raised = amount_raised + ? WHERE wish_id = ? AND amount_raised + ? <= price`) so two simultaneous contributions can never push the total past the price. If the guarded update affects zero rows, return the "Amount exceeds remaining price" error.*
+*Note: the iwish.server must apply this as one atomic, guarded update (e.g. `UPDATE WishItems SET amount_raised = amount_raised + ? WHERE wish_id = ? AND amount_raised + ? <= price`) so two simultaneous contributions can never push the total past the price. If the guarded update affects zero rows, return the "Amount exceeds remaining price" error.*
 
 ---
 

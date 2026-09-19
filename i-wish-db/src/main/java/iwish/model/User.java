@@ -6,7 +6,7 @@ public class User {
     private int userId;
     private String username;
     private String email;
-    private String passwordHash; // never sent to the client — server-side only
+    private String passwordHash; // never sent to the client — iwish.server-side only
     private Timestamp createdAt;
 
     public User(int userId, String username, String email, String passwordHash, Timestamp createdAt) {

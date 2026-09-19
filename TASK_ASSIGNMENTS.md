@@ -12,14 +12,14 @@ Each person's list is in the order they should do it. Dependencies are marked so
 2. Write the SQL schema for: Users, Friends, CatalogItems, WishItems, Contributions, Notifications (with foreign keys).
 3. Create the actual database instance and run the schema against it.
 4. Seed 5–10 CatalogItems (name, price).
-5. Seed 2–3 test Users for development/demo.
+5. Seed 2–3 iwish.test Users for development/demo.
 6. Push schema + seed script to GitHub immediately — this is the first thing that unblocks Person 3.
-7. Write the JDBC Connection class the server will use.
+7. Write the JDBC Connection class the iwish.server will use.
 8. Write CRUD queries for Users (insert on register, select on login).
 9. Write CRUD queries for Friends (insert request, update status, select friends/pending).
 10. Write CRUD queries for WishItems (insert, update, delete, select — including the friend's-wishlist select).
 11. Write CRUD queries for CatalogItems (select all, for VIEW_CATALOG).
-12. Write the **guarded atomic update** for Contributions — `UPDATE WishItems SET amount_raised = amount_raised + ? WHERE wish_id = ? AND amount_raised + ? <= price` — plus the insert into Contributions itself. This is the most important query in the project; test it in isolation before handing it to Person 3.
+12. Write the **guarded atomic update** for Contributions — `UPDATE WishItems SET amount_raised = amount_raised + ? WHERE wish_id = ? AND amount_raised + ? <= price` — plus the insert into Contributions itself. This is the most important query in the project; iwish.test it in isolation before handing it to Person 3.
 13. Write CRUD queries for Notifications (insert, select unread/all, mark read).
 14. Export a fresh DB backup once schema is stable, hand to Person 3 so they can develop against real data.
 15. From here on: review and merge every pull request as it lands, keep main branch always buildable.
@@ -29,20 +29,20 @@ Each person's list is in the order they should do it. Dependencies are marked so
 
 ## Person 2 — Server Networking & Protocol
 
-**Owns:** socket server, threading, `PROTOCOL.md`, connection lifecycle.
+**Owns:** socket iwish.server, threading, `PROTOCOL.md`, connection lifecycle.
 
 1. Attend kickoff, drive the group agreement on the protocol action list.
 2. Create and push `PROTOCOL.md` (already drafted — confirm it with the group, especially the wish-item-with-contributions edge case noted at the bottom).
-3. Build the server skeleton: open a socket, accept incoming connections.
+3. Build the iwish.server skeleton: open a socket, accept incoming connections.
 4. Add multi-threading — spin up one thread per connected client so multiple users can be handled at once.
 5. Build the dispatch layer: read incoming JSON, extract `"action"`, route to a handler function.
 6. Stub every action from `PROTOCOL.md` with a hardcoded response, just to prove round-trip works end to end.
-7. Hand this stubbed server to Persons 4, 5, 6 so they can start testing real network calls even before business logic is real.
+7. Hand this stubbed iwish.server to Persons 4, 5, 6 so they can start testing real network calls even before business logic is real.
 8. Once Person 3 has business logic methods ready, replace each stub one by one with the real call.
 9. Add password hashing at the point where REGISTER/LOGIN touch the password field (coordinate with Person 1 on the Users table column).
 10. Handle connection lifecycle correctly: clean disconnects, no leaked threads/sockets when a client closes.
-11. Add basic malformed-request handling (bad JSON, unknown action) so the server never crashes on bad input — return a standard ERROR response instead.
-12. Support the integration tests (Phase 3 and Phase 7) by running the server and watching logs for thread/connection issues during multi-client testing.
+11. Add basic malformed-request handling (bad JSON, unknown action) so the iwish.server never crashes on bad input — return a standard ERROR response instead.
+12. Support the integration tests (Phase 3 and Phase 7) by running the iwish.server and watching logs for thread/connection issues during multi-client testing.
 
 ---
 
@@ -73,7 +73,7 @@ Each person's list is in the order they should do it. Dependencies are marked so
 3. Build the Add/Remove Friend screen UI (search box + friend list with remove buttons) with mock data.
 4. Build the Accept/Decline Friend Request screen UI (list of incoming requests with two buttons each) with mock data.
 5. Build the View Friends List screen UI with mock data.
-6. Once Person 2's stubbed server is up: wire Register and Login to real `REGISTER`/`LOGIN` calls per `PROTOCOL.md`.
+6. Once Person 2's stubbed iwish.server is up: wire Register and Login to real `REGISTER`/`LOGIN` calls per `PROTOCOL.md`.
 7. Wire Add Friend to `ADD_FRIEND`, handle the error cases (`"User not found"`, `"Already friends"`, `"Friend request already pending"`) with real UI messages, not silent failures.
 8. Wire Accept/Decline screen to `VIEW_PENDING_REQUESTS` (to populate it) and `ACCEPT_FRIEND`/`DECLINE_FRIEND`.
 9. Wire Remove Friend to `REMOVE_FRIEND`.
@@ -90,7 +90,7 @@ Each person's list is in the order they should do it. Dependencies are marked so
 1. Attend kickoff.
 2. Build the own-wish-list screen UI (list view + add/edit/delete controls, pulling from a catalog picker) with mock data.
 3. Build the View Friend's Wish List screen UI (read-only list showing progress per item) with mock data.
-4. Once Person 2's stubbed server is up: wire the catalog picker to `VIEW_CATALOG`.
+4. Once Person 2's stubbed iwish.server is up: wire the catalog picker to `VIEW_CATALOG`.
 5. Wire "add to wish list" to `CREATE_WISH_ITEM`.
 6. Wire edit/delete to `UPDATE_WISH_ITEM`/`DELETE_WISH_ITEM`, including surfacing the "can't edit/delete — has contributions" error clearly to the user.
 7. Wire View Friend's Wish List to `VIEW_FRIEND_WISHLIST`, showing amount raised vs. price per item (e.g. a progress bar or "200/500 EGP" label) and marking completed items visibly.
@@ -106,12 +106,12 @@ Each person's list is in the order they should do it. Dependencies are marked so
 1. Attend kickoff.
 2. Build the Contribute screen UI (pick a friend's item, enter an amount, confirm) with mock data.
 3. Build the Notifications inbox UI (list of messages, unread indicator) with mock data.
-4. Once Person 2's stubbed server is up: wire the Contribute screen to `CONTRIBUTE`, handling `"Amount exceeds remaining price"` and `"Cannot contribute to your own wish item"` with clear UI feedback.
+4. Once Person 2's stubbed iwish.server is up: wire the Contribute screen to `CONTRIBUTE`, handling `"Amount exceeds remaining price"` and `"Cannot contribute to your own wish item"` with clear UI feedback.
 5. Wire Notifications inbox to `GET_NOTIFICATIONS` and `MARK_NOTIFICATION_READ`.
 6. Once Persons 4 and 5 have their screens functionally working: do a full pass across every screen in the app for consistent colors, fonts, icons, and spacing — this is the graded "Friendly GUI" requirement.
 7. Add/standardize error message display across all screens (not just your own) so failures never fail silently anywhere in the app.
 8. Add loading/disabled states during network calls, both on your own screens and any you find missing it elsewhere.
-9. Lead the second integration test (Phase 7): specifically try to break contributions and notifications with 3 simultaneous clients.
+9. Lead the second integration iwish.test (Phase 7): specifically try to break contributions and notifications with 3 simultaneous clients.
 10. Own the final demo run-through: confirm the full path (register → add friend → accept → view friend's list → contribute → both notifications fire) works cleanly before recording.
 
 ---
@@ -121,4 +121,4 @@ Each person's list is in the order they should do it. Dependencies are marked so
 - Nobody writes real networking code against an action not yet in `PROTOCOL.md`.
 - Push early, push often — Person 1 can't merge what isn't pushed.
 - If you're blocked, say so immediately rather than waiting — with a 2-day timeline there's no slack to absorb silent delays.
-- Every screen: disable the action button while waiting on a server response, and show a real error message on failure.
+- Every screen: disable the action button while waiting on a iwish.server response, and show a real error message on failure.

@@ -11,7 +11,7 @@ import java.util.Properties;
  * Central place that opens JDBC connections to MySQL.
  *
  * IMPORTANT: this returns a NEW connection every time getConnection()
- * is called. That is intentional for a multi-threaded server — each
+ * is called. That is intentional for a multi-threaded iwish.server — each
  * client thread should get its own Connection object and close it
  * (via try-with-resources) when it's done with a single query/transaction.
  * Do NOT share one Connection object across threads; MySQL's JDBC
