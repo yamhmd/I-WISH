@@ -47,8 +47,9 @@ public interface BusinessLogic {
     Response createWishItem(Request request, Session session) throws Exception;        // #10
     Response updateWishItem(Request request, Session session) throws Exception;        // #11
     Response deleteWishItem(Request request, Session session) throws Exception;        // #12
-    Response viewFriendWishlist(Request request, Session session) throws Exception;    // #13
-    Response contribute(Request request, Session session) throws Exception;            // #14
-    Response getNotifications(Request request, Session session) throws Exception;      // #15
-    Response markNotificationRead(Request request, Session session) throws Exception;  // #16
+    Response viewMyWishlist(Request request, Session session) throws Exception;        // #13
+    Response viewFriendWishlist(Request request, Session session) throws Exception;    // #14
+    Response contribute(Request request, Session session) throws Exception;            // #15
+    Response getNotifications(Request request, Session session) throws Exception;      // #16
+    Response markNotificationRead(Request request, Session session) throws Exception;  // #17
 }

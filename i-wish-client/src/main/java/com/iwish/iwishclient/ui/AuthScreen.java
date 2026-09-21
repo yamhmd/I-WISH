@@ -18,7 +18,7 @@ public class AuthScreen extends VBox {
     private final TextField usernameField = new TextField();
     private final TextField emailField = new TextField();
     private final PasswordField passwordField = new PasswordField();
-    private final Button submitButton = new Button();
+    private final Button submitButton = UiStyle.primaryButton("");
     private final Hyperlink switchLink = new Hyperlink();
 
     private final Runnable onSuccess;
@@ -27,13 +27,13 @@ public class AuthScreen extends VBox {
     public AuthScreen(Runnable onSuccess) {
         this.onSuccess = onSuccess;
 
-        setSpacing(12);
+        setSpacing(UiStyle.SPACING);
         setPadding(new Insets(30));
         setAlignment(Pos.CENTER);
-        setStyle("-fx-background-color: #fdf6ff;");
+        setStyle(UiStyle.screenBackground());
 
-        titleLabel.setStyle("-fx-font-size: 34px; -fx-font-weight: bold; -fx-text-fill: #6a2c91;");
-        subtitleLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #777777;");
+        titleLabel.setStyle("-fx-font-size: 34px; -fx-font-weight: bold; -fx-text-fill: " + UiStyle.PRIMARY + ";");
+        subtitleLabel.setStyle("-fx-font-size: " + UiStyle.BODY_SIZE + "; -fx-text-fill: " + UiStyle.MUTED_TEXT + ";");
 
         usernameField.setPromptText("Username");
         emailField.setPromptText("Email");
@@ -43,8 +43,6 @@ public class AuthScreen extends VBox {
         passwordField.setMaxWidth(300);
 
         submitButton.setMaxWidth(300);
-        submitButton.setStyle("-fx-background-color: #6a2c91; -fx-text-fill: white; "
-                + "-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 8;");
 
         submitButton.setOnAction(e -> submit());
         passwordField.setOnAction(e -> submit());

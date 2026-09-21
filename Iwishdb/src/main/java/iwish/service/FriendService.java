@@ -3,6 +3,7 @@ package iwish.service;
 import iwish.db.FriendDAO;
 import iwish.model.Friend;
 import iwish.model.User;
+import iwish.net.Protocol;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -64,7 +65,7 @@ public class FriendService {
                     Map<String, Object> m = new HashMap<>();
                     m.put("requester_id", f.getUserId());
                     m.put("username", f.getOtherUsername());
-                    m.put("requested_at", f.getRequestedAt().toInstant().toString());
+                    m.put("requested_at", Protocol.iso8601(f.getRequestedAt()));
                     return m;
                 })
                 .collect(Collectors.toList());

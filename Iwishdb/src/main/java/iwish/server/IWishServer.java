@@ -1,7 +1,7 @@
 package iwish.server;
 
 import iwish.logic.BusinessLogic;
-import iwish.logic.StubBusinessLogic;
+import iwish.logic.RealBusinessLogic;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -23,15 +23,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * Run it:
  *
- *     java -cp out iwish.iwish.server.IWishServer            # stub logic, port 5000
- *     java -cp out iwish.iwish.server.IWishServer 5050       # stub logic, port 5050
- *     java -Diwish.logic=iwish.logic.RealBusinessLogic -cp out iwish.iwish.server.IWishServer
+ *     java -cp out iwish.server.IWishServer                 # real logic, port 5000
+ *     java -cp out iwish.server.IWishServer 5050            # real logic, port 5050
+ *     java -Diwish.logic=iwish.logic.StubBusinessLogic -cp out iwish.server.IWishServer
  *
- * That last form is task 8, "replace each stub one by one with the real
- * call": when Person 3's class exists, name it in the system property (or
- * pass it to the constructor) and nothing else in the networking layer
- * changes. Until then the stub answers every action from PROTOCOL.md, which
- * is what Persons 4, 5 and 6 iwish.test against (task 7).
+ * Defaults to RealBusinessLogic (Person 3 wired in). Pass StubBusinessLogic
+ * via -Diwish.logic when you only need canned round-trip responses without MySQL.
  */
 public class IWishServer {
 
@@ -183,20 +180,21 @@ public class IWishServer {
     }
 
     /**
-     * Picks the business logic implementation. Defaults to the stub; set
-     * -Diwish.logic=&lt;fully.qualified.Class&gt; to run against Person 3's real one.
+     * Picks the business logic implementation. Defaults to {@link RealBusinessLogic};
+     * set -Diwish.logic=&lt;fully.qualified.Class&gt; to override (e.g. StubBusinessLogic).
      */
     private static BusinessLogic loadLogic() {
         String className = System.getProperty("iwish.logic");
         if (className == null || className.isBlank()) {
-            ServerLog.warn("Running with STUB business logic -- responses are canned, nothing is saved.");
-            return new StubBusinessLogic();
+            ServerLog.info("Running with REAL business logic (database-backed).");
+            return new RealBusinessLogic();
         }
         try {
             Object instance = Class.forName(className).getDeclaredConstructor().newInstance();
             if (!(instance instanceof BusinessLogic logic)) {
                 throw new IllegalStateException(className + " does not implement iwish.logic.BusinessLogic");
             }
+            ServerLog.info("Running with business logic: " + className);
             return logic;
         } catch (ReflectiveOperationException e) {
             throw new IllegalStateException("Could not load business logic class: " + className, e);

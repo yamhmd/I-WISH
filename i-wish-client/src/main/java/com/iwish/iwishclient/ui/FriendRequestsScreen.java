@@ -2,7 +2,6 @@ package com.iwish.iwishclient.ui;
 
 import com.iwish.iwishclient.model.FriendRequest;
 import com.iwish.iwishclient.session.Session;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -16,32 +15,27 @@ import javafx.scene.layout.VBox;
 public class FriendRequestsScreen extends VBox {
 
     private final ListView<FriendRequest> listView = new ListView<>();
-    private final Button refreshButton = new Button("Refresh");
+    private final Button refreshButton = UiStyle.primaryButton("Refresh");
 
     public FriendRequestsScreen() {
-        setSpacing(12);
-        setPadding(new Insets(20));
-        setStyle("-fx-background-color: #fdf6ff;");
+        setSpacing(UiStyle.SPACING);
+        setPadding(UiStyle.SCREEN_PADDING);
+        setStyle(UiStyle.screenBackground());
 
-        Label title = new Label("Friend requests");
-        title.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #6a2c91;");
+        Label title = UiStyle.title("Friend requests");
 
         listView.setPlaceholder(new Label("No pending requests."));
         VBox.setVgrow(listView, Priority.ALWAYS);
         listView.setCellFactory(lv -> new ListCell<>() {
             private final Label name = new Label();
             private final Region spacer = new Region();
-            private final Button acceptButton = new Button("Accept");
-            private final Button declineButton = new Button("Decline");
-            private final HBox row = new HBox(10, name, spacer, acceptButton, declineButton);
+            private final Button acceptButton = UiStyle.successButton("Accept");
+            private final Button declineButton = UiStyle.dangerButton("Decline");
+            private final HBox row = new HBox(UiStyle.SPACING, name, spacer, acceptButton, declineButton);
 
             {
                 HBox.setHgrow(spacer, Priority.ALWAYS);
                 row.setAlignment(Pos.CENTER_LEFT);
-                acceptButton.setStyle("-fx-background-color: #5cb85c; -fx-text-fill: white; "
-                        + "-fx-background-radius: 6;");
-                declineButton.setStyle("-fx-background-color: #d9534f; -fx-text-fill: white; "
-                        + "-fx-background-radius: 6;");
                 acceptButton.setOnAction(e -> respond(getItem(), true));
                 declineButton.setOnAction(e -> respond(getItem(), false));
             }
@@ -58,8 +52,6 @@ public class FriendRequestsScreen extends VBox {
             }
         });
 
-        refreshButton.setStyle("-fx-background-color: #6a2c91; -fx-text-fill: white; "
-                + "-fx-font-weight: bold; -fx-background-radius: 8;");
         refreshButton.setOnAction(e -> refresh());
 
         getChildren().addAll(title, listView, refreshButton);

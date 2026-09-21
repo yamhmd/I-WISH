@@ -1,7 +1,11 @@
 package com.iwish.iwishclient.network;
 
+import com.iwish.iwishclient.model.CatalogItem;
 import com.iwish.iwishclient.model.FriendRequest;
+import com.iwish.iwishclient.model.FriendWishlist;
+import com.iwish.iwishclient.model.NotificationItem;
 import com.iwish.iwishclient.model.User;
+import com.iwish.iwishclient.model.WishItem;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -19,17 +23,7 @@ import java.util.Map;
 
 /**
  * Real networking implementation of {@link ApiClient}.
- *
- * Speaks exactly the transport described in PROTOCOL.md: TCP socket, one
- * JSON object per line out, one JSON object per line back. Drop-in
- * replacement for MockApiClient -- the UI code does not change.
- *
- * Usage (in HelloApplication):
- *     Session.get().setApi(new SocketApiClient("localhost", 5000));
- *
- * Not thread-safe by design, but every call is synchronized so the JavaFX
- * background threads in UiHelper cannot interleave two conversations on the
- * same socket.
+ * Speaks PROTOCOL.md over a single authenticated TCP socket.
  */
 public class SocketApiClient implements ApiClient, Closeable {
 
@@ -52,8 +46,6 @@ public class SocketApiClient implements ApiClient, Closeable {
         this.host = host;
         this.port = port;
     }
-
-    // ---------------- ApiClient ----------------
 
     @Override
     public User register(String username, String email, String password) throws ApiException {
@@ -113,13 +105,96 @@ public class SocketApiClient implements ApiClient, Closeable {
         return requests;
     }
 
-    // ---------------- transport ----------------
+    @Override
+    public List<CatalogItem> viewCatalog() throws ApiException {
+        Map<String, Object> r = send("VIEW_CATALOG");
+        List<CatalogItem> items = new ArrayList<>();
+        for (Object o : asList(r.get("items"))) {
+            Map<String, Object> item = asMap(o);
+            items.add(new CatalogItem(
+                    asInt(item.get("item_id")),
+                    asString(item.get("name")),
+                    asDouble(item.get("price"))));
+        }
+        return items;
+    }
 
-    /**
-     * Sends one action with the given key/value pairs and returns the fields of
-     * a successful response. Throws ApiException on transport failure or on any
-     * { "status": "ERROR", "message": ... } reply.
-     */
+    @Override
+    public WishItem createWishItem(int userId, int itemId) throws ApiException {
+        Map<String, Object> r = send("CREATE_WISH_ITEM", "user_id", userId, "item_id", itemId);
+        return new WishItem(
+                asInt(r.get("wish_id")),
+                asInt(r.get("item_id")),
+                "",
+                0,
+                asDouble(r.get("amount_raised")),
+                asBoolean(r.get("is_complete")));
+    }
+
+    @Override
+    public void updateWishItem(int userId, int wishId, int itemId) throws ApiException {
+        send("UPDATE_WISH_ITEM", "user_id", userId, "wish_id", wishId, "item_id", itemId);
+    }
+
+    @Override
+    public void deleteWishItem(int userId, int wishId) throws ApiException {
+        send("DELETE_WISH_ITEM", "user_id", userId, "wish_id", wishId);
+    }
+
+    @Override
+    public List<WishItem> viewMyWishlist(int userId) throws ApiException {
+        Map<String, Object> r = send("VIEW_MY_WISHLIST", "user_id", userId);
+        return parseWishItems(r.get("wish_items"));
+    }
+
+    @Override
+    public FriendWishlist viewFriendWishlist(int userId, int friendId) throws ApiException {
+        Map<String, Object> r = send("VIEW_FRIEND_WISHLIST", "user_id", userId, "friend_id", friendId);
+        return new FriendWishlist(asString(r.get("friend_username")), parseWishItems(r.get("wish_items")));
+    }
+
+    @Override
+    public boolean contribute(int userId, int wishId, double amount) throws ApiException {
+        Map<String, Object> r = send("CONTRIBUTE", "user_id", userId, "wish_id", wishId, "amount", amount);
+        return asBoolean(r.get("wish_completed"));
+    }
+
+    @Override
+    public List<NotificationItem> getNotifications(int userId) throws ApiException {
+        Map<String, Object> r = send("GET_NOTIFICATIONS", "user_id", userId);
+        List<NotificationItem> items = new ArrayList<>();
+        for (Object o : asList(r.get("notifications"))) {
+            Map<String, Object> n = asMap(o);
+            items.add(new NotificationItem(
+                    asInt(n.get("notif_id")),
+                    asString(n.get("type")),
+                    asString(n.get("message")),
+                    asBoolean(n.get("is_read")),
+                    asString(n.get("created_at"))));
+        }
+        return items;
+    }
+
+    @Override
+    public void markNotificationRead(int userId, int notifId) throws ApiException {
+        send("MARK_NOTIFICATION_READ", "user_id", userId, "notif_id", notifId);
+    }
+
+    private List<WishItem> parseWishItems(Object raw) throws ApiException {
+        List<WishItem> items = new ArrayList<>();
+        for (Object o : asList(raw)) {
+            Map<String, Object> w = asMap(o);
+            items.add(new WishItem(
+                    asInt(w.get("wish_id")),
+                    asInt(w.get("item_id")),
+                    asString(w.get("name")),
+                    asDouble(w.get("price")),
+                    asDouble(w.get("amount_raised")),
+                    asBoolean(w.get("is_complete"))));
+        }
+        return items;
+    }
+
     private synchronized Map<String, Object> send(String action, Object... keyValuePairs) throws ApiException {
         Map<String, Object> request = new LinkedHashMap<>();
         request.put("action", action);
@@ -132,7 +207,6 @@ public class SocketApiClient implements ApiClient, Closeable {
         try {
             reply = exchange(line);
         } catch (IOException first) {
-            // The server may have dropped an idle socket; try once on a fresh one.
             closeQuietly();
             try {
                 reply = exchange(line);
@@ -186,7 +260,6 @@ public class SocketApiClient implements ApiClient, Closeable {
                 socket.close();
             }
         } catch (IOException ignored) {
-            // nothing useful to do
         }
         socket = null;
         in = null;
@@ -197,8 +270,6 @@ public class SocketApiClient implements ApiClient, Closeable {
     public synchronized void close() {
         closeQuietly();
     }
-
-    // ---------------- tiny JSON (no external library in this module) ----------------
 
     private static String writeJson(Object value) {
         StringBuilder sb = new StringBuilder();
@@ -402,8 +473,6 @@ public class SocketApiClient implements ApiClient, Closeable {
         }
     }
 
-    // ---------------- field helpers ----------------
-
     @SuppressWarnings("unchecked")
     private static Map<String, Object> asMap(Object value) {
         if (value instanceof Map) return (Map<String, Object>) value;
@@ -412,7 +481,7 @@ public class SocketApiClient implements ApiClient, Closeable {
 
     private static List<Object> asList(Object value) {
         if (value instanceof List<?> list) return new ArrayList<>(list);
-        return new ArrayList<>(); // missing or null list -> empty, so the UI shows "nothing here"
+        return new ArrayList<>();
     }
 
     private static String asString(Object value) {
@@ -425,9 +494,26 @@ public class SocketApiClient implements ApiClient, Closeable {
             try {
                 return Integer.parseInt(str.trim());
             } catch (NumberFormatException ignored) {
-                // fall through
             }
         }
         throw new ApiException("Server response is missing a numeric id");
+    }
+
+    private static double asDouble(Object value) {
+        if (value instanceof Number n) return n.doubleValue();
+        if (value instanceof String str) {
+            try {
+                return Double.parseDouble(str.trim());
+            } catch (NumberFormatException ignored) {
+                return 0;
+            }
+        }
+        return 0;
+    }
+
+    private static boolean asBoolean(Object value) {
+        if (value instanceof Boolean b) return b;
+        if (value instanceof Number n) return n.intValue() != 0;
+        return "true".equalsIgnoreCase(asString(value));
     }
 }

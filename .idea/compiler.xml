@@ -8,11 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="i-wish" />
         <module name="iwish-client" />
-        <module name="i-wish-db-layer" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="26">
-      <module name="i-wish-db-layer" target="26" />
-    </bytecodeTargetLevel>
   </component>
 </project>

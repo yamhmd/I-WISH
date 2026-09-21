@@ -20,7 +20,7 @@ public final class Protocol {
     public static final String STATUS_OK = "OK";
     public static final String STATUS_ERROR = "ERROR";
 
-    // ---- the 16 actions, in PROTOCOL.md order ------------------------
+    // ---- the 17 actions, in PROTOCOL.md order ------------------------
     public static final String REGISTER               = "REGISTER";
     public static final String LOGIN                  = "LOGIN";
     public static final String ADD_FRIEND             = "ADD_FRIEND";
@@ -33,6 +33,7 @@ public final class Protocol {
     public static final String CREATE_WISH_ITEM       = "CREATE_WISH_ITEM";
     public static final String UPDATE_WISH_ITEM       = "UPDATE_WISH_ITEM";
     public static final String DELETE_WISH_ITEM       = "DELETE_WISH_ITEM";
+    public static final String VIEW_MY_WISHLIST       = "VIEW_MY_WISHLIST";
     public static final String VIEW_FRIEND_WISHLIST   = "VIEW_FRIEND_WISHLIST";
     public static final String CONTRIBUTE             = "CONTRIBUTE";
     public static final String GET_NOTIFICATIONS      = "GET_NOTIFICATIONS";
