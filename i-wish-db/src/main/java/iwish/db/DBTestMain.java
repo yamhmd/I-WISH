@@ -9,10 +9,17 @@ import java.util.List;
 /**
  * Run this class directly (right-click -> Run) to sanity-check the
  * entire database layer BEFORE Person 3 starts building business logic
+<<<<<<< Updated upstream
  * on top of it, and BEFORE Person 2 wires up the iwish.server.
  *
  * What it does, step by step, printing results as it goes:
  *   1. Creates 3 iwish.test users (with properly hashed passwords)
+=======
+ * on top of it, and BEFORE Person 2 wires up the server.
+ *
+ * What it does, step by step, printing results as it goes:
+ *   1. Creates 3 test users (with properly hashed passwords)
+>>>>>>> Stashed changes
  *   2. Sends and accepts a friend request between two of them
  *   3. Adds a wish item to one user's list
  *   4. Has the other two users contribute to it (deliberately completing it)
@@ -34,7 +41,11 @@ public class DBTestMain {
         ContributionDAO contributionDAO = new ContributionDAO();
         NotificationDAO notificationDAO = new NotificationDAO();
 
+<<<<<<< Updated upstream
         System.out.println("=== 1. Creating iwish.test users ===");
+=======
+        System.out.println("=== 1. Creating test users ===");
+>>>>>>> Stashed changes
         int ahmedId = createTestUser(userDAO, "ahmed", "ahmed@mail.com");
         int mohamedId = createTestUser(userDAO, "mohamed", "mohamed@mail.com");
         int saraId = createTestUser(userDAO, "sara", "sara@mail.com");

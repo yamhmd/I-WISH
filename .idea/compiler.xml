@@ -9,6 +9,9 @@
         <module name="i-wish" />
       </profile>
     </annotationProcessing>
+<<<<<<< Updated upstream
     <bytecodeTargetLevel target="17" />
+=======
+>>>>>>> Stashed changes
   </component>
 </project>
