@@ -7,11 +7,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="i-wish" />
+        <module name="iwish-client" />
+        <module name="i-wish-db-layer" />
       </profile>
     </annotationProcessing>
-<<<<<<< Updated upstream
-    <bytecodeTargetLevel target="17" />
-=======
->>>>>>> Stashed changes
+    <bytecodeTargetLevel target="26">
+      <module name="i-wish-db-layer" target="26" />
+    </bytecodeTargetLevel>
   </component>
 </project>

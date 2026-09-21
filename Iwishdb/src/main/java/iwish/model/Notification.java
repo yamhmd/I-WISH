@@ -17,10 +17,6 @@ public class Notification {
         this.type = type;
         this.read = read;
         this.createdAt = createdAt;
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
     }
 
     public int getNotifId() { return notifId; }

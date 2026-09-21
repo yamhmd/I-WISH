@@ -5,14 +5,12 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/i-wish-db/pom.xml" />
+        <option value="$PROJECT_DIR$/i-wish-client/pom.xml" />
+        <option value="$PROJECT_DIR$/Iwishdb/pom.xml" />
       </list>
     </option>
   </component>
-<<<<<<< Updated upstream
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_21" project-jdk-name="openjdk-26" project-jdk-type="JavaSDK">
-=======
-  <component name="ProjectRootManager" version="2" project-jdk-name="openjdk-26" project-jdk-type="JavaSDK">
->>>>>>> Stashed changes
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_26" project-jdk-name="openjdk-26" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
 </project>
