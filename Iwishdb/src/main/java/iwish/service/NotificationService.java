@@ -2,6 +2,7 @@ package iwish.service;
 
 import iwish.db.NotificationDAO;
 import iwish.model.Notification;
+import iwish.net.Protocol;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -24,7 +25,7 @@ public class NotificationService {
                     m.put("type", n.getType());
                     m.put("message", n.getMessage());
                     m.put("is_read", n.isRead());
-                    m.put("created_at", n.getCreatedAt().toInstant().toString());
+                    m.put("created_at", Protocol.iso8601(n.getCreatedAt()));
                     return m;
                 })
                 .collect(Collectors.toList());

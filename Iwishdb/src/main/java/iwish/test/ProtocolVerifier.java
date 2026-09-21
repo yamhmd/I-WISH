@@ -24,7 +24,7 @@ import static iwish.test.ProtocolClient.fields;
  * It starts a real iwish.server on a free port with the stub business logic, opens
  * real TCP sockets, and checks:
  *
- *   A. all 16 actions exist and answer with the fields PROTOCOL.md promises
+ *   A. all protocol actions exist and answer with the fields PROTOCOL.md promises
  *   B. the general rules (status field, error shape, newline framing,
  *      ISO-8601 timestamps, 2-decimal money, passwords never echoed)
  *   C. malformed input handling -- bad JSON, no action, unknown action,
@@ -152,38 +152,45 @@ public class ProtocolVerifier {
                 c.send("DELETE_WISH_ITEM", fields("user_id", userId, "wish_id", 99)),
                 "Cannot delete an item with existing contributions");
 
-            // #13 VIEW_FRIEND_WISHLIST
-            Map<String, Object> wishlist = c.send("VIEW_FRIEND_WISHLIST", fields("user_id", userId, "friend_id", 2));
-            checkOk("#13 VIEW_FRIEND_WISHLIST", wishlist);
-            checkFields("#13 VIEW_FRIEND_WISHLIST", wishlist, "friend_username", "wish_items");
-            checkListOfObjects("#13 VIEW_FRIEND_WISHLIST wish_items[]", wishlist.get("wish_items"),
+            // #13 VIEW_MY_WISHLIST
+            Map<String, Object> myWishlist = c.send("VIEW_MY_WISHLIST", fields("user_id", userId));
+            checkOk("#13 VIEW_MY_WISHLIST", myWishlist);
+            checkFields("#13 VIEW_MY_WISHLIST", myWishlist, "wish_items");
+            checkListOfObjects("#13 VIEW_MY_WISHLIST wish_items[]", myWishlist.get("wish_items"),
                 "wish_id", "item_id", "name", "price", "amount_raised", "is_complete");
 
-            // #13 error path
-            checkError("#13 VIEW_FRIEND_WISHLIST when not friends",
-                c.send("VIEW_FRIEND_WISHLIST", fields("user_id", userId, "friend_id", 999)), "Not friends");
-
-            // #14 CONTRIBUTE
-            Map<String, Object> contribution = c.send("CONTRIBUTE",
-                fields("user_id", userId, "wish_id", 60, "amount", new BigDecimal("300.00")));
-            checkOk("#14 CONTRIBUTE", contribution);
-            checkFields("#14 CONTRIBUTE", contribution, "wish_completed", "message");
-            check("#14 CONTRIBUTE wish_completed is a boolean",
-                contribution.get("wish_completed") instanceof Boolean, "got " + contribution.get("wish_completed"));
+            // #14 VIEW_FRIEND_WISHLIST
+            Map<String, Object> wishlist = c.send("VIEW_FRIEND_WISHLIST", fields("user_id", userId, "friend_id", 2));
+            checkOk("#14 VIEW_FRIEND_WISHLIST", wishlist);
+            checkFields("#14 VIEW_FRIEND_WISHLIST", wishlist, "friend_username", "wish_items");
+            checkListOfObjects("#14 VIEW_FRIEND_WISHLIST wish_items[]", wishlist.get("wish_items"),
+                "wish_id", "item_id", "name", "price", "amount_raised", "is_complete");
 
             // #14 error path
-            checkError("#14 CONTRIBUTE over the remaining price",
+            checkError("#14 VIEW_FRIEND_WISHLIST when not friends",
+                c.send("VIEW_FRIEND_WISHLIST", fields("user_id", userId, "friend_id", 999)), "Not friends");
+
+            // #15 CONTRIBUTE
+            Map<String, Object> contribution = c.send("CONTRIBUTE",
+                fields("user_id", userId, "wish_id", 60, "amount", new BigDecimal("300.00")));
+            checkOk("#15 CONTRIBUTE", contribution);
+            checkFields("#15 CONTRIBUTE", contribution, "wish_completed", "message");
+            check("#15 CONTRIBUTE wish_completed is a boolean",
+                contribution.get("wish_completed") instanceof Boolean, "got " + contribution.get("wish_completed"));
+
+            // #15 error path
+            checkError("#15 CONTRIBUTE over the remaining price",
                 c.send("CONTRIBUTE", fields("user_id", userId, "wish_id", 60, "amount", new BigDecimal("900.00"))),
                 "Amount exceeds remaining price");
 
-            // #15 GET_NOTIFICATIONS
+            // #16 GET_NOTIFICATIONS
             Map<String, Object> notifications = c.send("GET_NOTIFICATIONS", fields("user_id", userId));
-            checkOk("#15 GET_NOTIFICATIONS", notifications);
-            checkListOfObjects("#15 GET_NOTIFICATIONS notifications[]", notifications.get("notifications"),
+            checkOk("#16 GET_NOTIFICATIONS", notifications);
+            checkListOfObjects("#16 GET_NOTIFICATIONS notifications[]", notifications.get("notifications"),
                 "notif_id", "type", "message", "is_read", "created_at");
 
-            // #16 MARK_NOTIFICATION_READ
-            checkOkWithMessage("#16 MARK_NOTIFICATION_READ",
+            // #17 MARK_NOTIFICATION_READ
+            checkOkWithMessage("#17 MARK_NOTIFICATION_READ",
                 c.send("MARK_NOTIFICATION_READ", fields("user_id", userId, "notif_id", 200)));
         }
 

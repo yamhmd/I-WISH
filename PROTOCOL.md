@@ -229,7 +229,28 @@ Common `message` values to use consistently: `"Invalid credentials"`, `"Username
 
 ---
 
-## 13. VIEW_FRIEND_WISHLIST
+## 13. VIEW_MY_WISHLIST
+
+*(the logged-in user's own wish list — needed so the client can show wish_id values for update/delete)*
+
+**Request**
+```json
+{ "action": "VIEW_MY_WISHLIST", "user_id": 1 }
+```
+
+**Response (success)**
+```json
+{
+  "status": "OK",
+  "wish_items": [
+    { "wish_id": 55, "item_id": 10, "name": "Headphones", "price": 500.00, "amount_raised": 0.00, "is_complete": false }
+  ]
+}
+```
+
+---
+
+## 14. VIEW_FRIEND_WISHLIST
 
 **Request**
 ```json
@@ -251,7 +272,7 @@ Common `message` values to use consistently: `"Invalid credentials"`, `"Username
 
 ---
 
-## 14. CONTRIBUTE
+## 15. CONTRIBUTE
 
 **Request**
 ```json
@@ -269,7 +290,7 @@ Common `message` values to use consistently: `"Invalid credentials"`, `"Username
 
 ---
 
-## 15. GET_NOTIFICATIONS
+## 16. GET_NOTIFICATIONS
 
 **Request**
 ```json
@@ -301,7 +322,7 @@ Common `message` values to use consistently: `"Invalid credentials"`, `"Username
 
 ---
 
-## 16. MARK_NOTIFICATION_READ
+## 17. MARK_NOTIFICATION_READ
 
 **Request**
 ```json

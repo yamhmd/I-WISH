@@ -173,6 +173,19 @@ public class StubBusinessLogic implements BusinessLogic {
     }
 
     @Override
+    public Response viewMyWishlist(Request request, Session session) throws Exception {
+        request.getInt("user_id");
+        Map<String, Object> item = new LinkedHashMap<>();
+        item.put("wish_id", 55);
+        item.put("item_id", 10);
+        item.put("name", "Headphones");
+        item.put("price", new BigDecimal("500.00"));
+        item.put("amount_raised", new BigDecimal("0.00"));
+        item.put("is_complete", false);
+        return Response.ok().with("wish_items", List.of(item));
+    }
+
+    @Override
     public Response viewFriendWishlist(Request request, Session session) throws Exception {
         request.getInt("user_id");
         int friendId = request.getInt("friend_id");

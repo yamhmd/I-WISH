@@ -14,10 +14,10 @@ import java.util.Set;
  * TASK_ASSIGNMENTS, Person 2 item 5: read the incoming JSON, pull out
  * "action", route it to a handler.
  *
- * Every one of the 16 actions in PROTOCOL.md is registered in the table
- * below, each pointing at a method of the BusinessLogic interface. Swapping
- * the stub for Person 3's real implementation (item 8) is a one-line change
- * in IWishServer -- this class never changes.
+ * Every action in PROTOCOL.md is registered in the table below, each pointing
+ * at a method of the BusinessLogic interface. Swapping the stub for Person 3's
+ * real implementation (item 8) is a one-line change in IWishServer -- this
+ * class never changes.
  *
  * Three things happen around every call, so no handler has to repeat them:
  *   1. Unknown action  -> standard ERROR, thread stays alive.
@@ -61,6 +61,7 @@ public class Dispatcher {
         routes.put(Protocol.CREATE_WISH_ITEM,       logic::createWishItem);
         routes.put(Protocol.UPDATE_WISH_ITEM,       logic::updateWishItem);
         routes.put(Protocol.DELETE_WISH_ITEM,       logic::deleteWishItem);
+        routes.put(Protocol.VIEW_MY_WISHLIST,       logic::viewMyWishlist);
         routes.put(Protocol.VIEW_FRIEND_WISHLIST,   logic::viewFriendWishlist);
         routes.put(Protocol.CONTRIBUTE,             logic::contribute);
         routes.put(Protocol.GET_NOTIFICATIONS,      logic::getNotifications);

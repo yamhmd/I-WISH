@@ -5,6 +5,7 @@ import iwish.db.FriendDAO;
 import iwish.db.UserDAO;
 import iwish.db.WishItemDAO;
 import iwish.model.CatalogItem;
+import iwish.model.User;
 import iwish.model.WishItem;
 
 import java.sql.SQLException;
@@ -92,8 +93,11 @@ public class WishlistService {
         List<WishItem> items = wishItemDAO.getFriendWishlist(friendId);
 
         Map<String, Object> result = new HashMap<>();
-        String friendUsername = new UserDAO().findById(friendId).getUsername();
-        result.put("friend_username", friendUsername);
+        User friend = new UserDAO().findById(friendId);
+        if (friend == null) {
+            throw new IllegalStateException("User not found");
+        }
+        result.put("friend_username", friend.getUsername());
         result.put("wish_items", toMaps(items));
         return result;
     }

@@ -1,6 +1,5 @@
 package com.iwish.iwishclient;
 
-import com.iwish.iwishclient.network.MockApiClient;
 import com.iwish.iwishclient.network.SocketApiClient;
 import com.iwish.iwishclient.session.Session;
 import com.iwish.iwishclient.ui.AuthScreen;
@@ -16,7 +15,7 @@ public class HelloApplication extends Application {
         Session.get().setApi(new SocketApiClient("localhost", 5000));
 
         AuthScreen authScreen = new AuthScreen(() ->
-                stage.setScene(new Scene(new MainScreen(), 700, 500))
+                stage.setScene(new Scene(new MainScreen(), 900, 620))
         );
 
         stage.setTitle("i-Wish");
