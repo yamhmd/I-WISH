@@ -59,18 +59,34 @@ public class ContributionService {
             throw new IllegalStateException("Amount exceeds remaining price");
         }
 
-        if (result.wishCompleted) {
-            // The contribution is already saved at this point. If sending the
-            // notifications fails we must NOT report the whole call as an error,
-            // or the client would think the money was not recorded.
-            try {
+        // The contribution is already saved at this point. If sending the
+        // notification(s) fails we must NOT report the whole call as an error,
+        // or the client would think the money was not recorded.
+        try {
+            if (result.wishCompleted) {
                 notifyOnCompletion(item, wishId);
-            } catch (SQLException e) {
-                System.err.println("WARNING: contribution saved but notifications failed: " + e.getMessage());
+            } else {
+                // Not fully funded yet: still let the receiver know a friend
+                // just contributed, instead of only telling them once it's done.
+                notifyOnContribution(item, userId, amount);
             }
+        } catch (SQLException e) {
+            System.err.println("WARNING: contribution saved but notification(s) failed: " + e.getMessage());
         }
 
         return Map.of("wish_completed", result.wishCompleted);
+    }
+
+    private void notifyOnContribution(WishItem item, int contributorId, BigDecimal amount) throws SQLException {
+        User contributor = userDAO.findById(contributorId);
+        String contributorName = (contributor != null) ? contributor.getUsername() : "A friend";
+
+        String message = contributorName + " contributed $" + amount
+                + " to your item '" + item.getItemName() + "'.";
+        if (message.length() > 255) {              // Notifications.message is VARCHAR(255)
+            message = message.substring(0, 252) + "...";
+        }
+        notificationDAO.addNotification(item.getUserId(), message, "receiver");
     }
 
     private void notifyOnCompletion(WishItem item, int wishId) throws SQLException {

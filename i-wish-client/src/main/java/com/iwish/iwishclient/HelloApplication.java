@@ -14,13 +14,19 @@ public class HelloApplication extends Application {
     public void start(Stage stage) {
         Session.get().setApi(new SocketApiClient("localhost", 5000));
 
-        AuthScreen authScreen = new AuthScreen(() ->
-                stage.setScene(new Scene(new MainScreen(), 900, 620))
-        );
-
+        showAuthScreen(stage);
         stage.setTitle("i-Wish");
-        stage.setScene(new Scene(authScreen, 420, 520));
         stage.show();
+    }
+
+    private void showAuthScreen(@org.jetbrains.annotations.NotNull Stage stage) {
+        AuthScreen authScreen = new AuthScreen(() ->
+                stage.setScene(new Scene(new MainScreen(() -> {
+                    Session.get().logout();
+                    showAuthScreen(stage);
+                }), 900, 620))
+        );
+        stage.setScene(new Scene(authScreen, 420, 520));
     }
 
     public static void main(String[] args) {
